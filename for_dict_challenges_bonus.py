@@ -92,25 +92,6 @@ def get_most_popular(d):
     return [k for k, v in len_d.items() if v == len_d[max_val]]
 
 
-# Тут запутался малость
-# def branches(lst):
-#     headers = {x['id']: [] for x in lst if x['reply_for'] is None}
-#     print(headers)
-#
-#     for m in lst:
-#         reply_id = m['reply_for']
-#         if reply_id in headers:
-#             headers[reply_id].append(m['id'])
-#     print(headers)
-#
-#     for m in lst:
-#         reply_id = m['reply_for']
-#         if reply_id is not None and headers.get(reply_id) and reply_id in headers[reply_id]:
-#             headers[reply_id].append(m['id'])
-#
-#     return headers
-
-
 def max_time_zone(lst):
     # утром (с 5 до 12 часов), днём (12-18 часов) или вечером (с 18 часов до 23).
     morning = day = evening = 0
@@ -131,6 +112,11 @@ def max_time_zone(lst):
         return f'в чате больше всего сообщений: вечером'
 
 
+def find_prev(obj, next_id):
+    [x] = [message['reply_for'] for message in obj if message['id'] == next_id]
+    return x
+
+
 if __name__ == "__main__":
     chat = generate_chat_history()
     print(1)
@@ -147,4 +133,17 @@ if __name__ == "__main__":
     print(*get_most_popular(get_id_max_uniq_mess(chat)))
     print(4)
     print(max_time_zone(chat))
+    print(5)
+    count_lst = []
+    result_id = None
+    for m in chat:
+        max_count = count = 1
+        prev_id = m['reply_for']
+        while prev_id:
+            prev_id = find_prev(chat, prev_id)
+            count += 1
+            if max_count < count:
+                max_count = count
+                result_id = m['id']
+    print(result_id)
 
